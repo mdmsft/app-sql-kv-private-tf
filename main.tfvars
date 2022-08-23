@@ -1,2 +1,2 @@
-tenant_id       = "op://Microsoft/Azure/Tenant"
-subscription_id = "op://Microsoft/Azure/Subscription"
+service_plan_sku_name = ""
+dns_zone_id           = ""
