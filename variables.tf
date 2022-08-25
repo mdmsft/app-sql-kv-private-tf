@@ -39,7 +39,7 @@ variable "svc_virtual_network_address_space" {
 
 variable "service_plan_sku_name" {
   type    = string
-  default = "S1"
+  default = "B1"
 }
 
 variable "key_vault_soft_delete_retention_days" {
@@ -55,4 +55,9 @@ variable "sql_server_administrator_login" {
 
 variable "dns_zone_id" {
   type = string
+}
+
+variable "web_app_repo_url" {
+  type    = string
+  default = "https://github.com/mdmsft/web-app-dotnet-ado-sql"
 }

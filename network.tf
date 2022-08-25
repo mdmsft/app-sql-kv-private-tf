@@ -29,11 +29,11 @@ resource "azurerm_virtual_network" "svc" {
 }
 
 resource "azurerm_subnet" "svc" {
-  name                                           = "default"
-  resource_group_name                            = azurerm_resource_group.main.name
-  virtual_network_name                           = azurerm_virtual_network.svc.name
-  address_prefixes                               = [var.svc_virtual_network_address_space]
-  enforce_private_link_endpoint_network_policies = false
+  name                                      = "default"
+  resource_group_name                       = azurerm_resource_group.main.name
+  virtual_network_name                      = azurerm_virtual_network.svc.name
+  address_prefixes                          = [var.svc_virtual_network_address_space]
+  private_endpoint_network_policies_enabled = false
 }
 
 resource "azurerm_virtual_network_peering" "app" {

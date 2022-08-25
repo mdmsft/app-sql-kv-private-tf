@@ -1,3 +1,10 @@
+locals {
+  vault_secrets = [
+    azurerm_key_vault_secret.sql_connection_string.resource_versionless_id,
+    azurerm_key_vault_secret.application_insights_connection_string.resource_versionless_id
+  ]
+}
+
 resource "azurerm_key_vault" "main" {
   name                       = substr("kv-${local.resource_suffix}", 0, 24)
   location                   = azurerm_resource_group.main.location
@@ -38,12 +45,9 @@ resource "azurerm_key_vault_secret" "application_insights_connection_string" {
 }
 
 resource "azurerm_role_assignment" "key_vault_secrets_user" {
-  for_each = toset([
-    azurerm_key_vault_secret.sql_connection_string.resource_versionless_id,
-    azurerm_key_vault_secret.application_insights_connection_string.resource_versionless_id
-  ])
+  count                = length(local.vault_secrets)
   role_definition_name = "Key Vault Secrets User"
-  scope                = each.key
+  scope                = local.vault_secrets[count.index]
   principal_id         = azurerm_user_assigned_identity.app.principal_id
 }
 

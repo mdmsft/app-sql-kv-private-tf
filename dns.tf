@@ -3,8 +3,8 @@ locals {
     vault    = "privatelink.vaultcore.azure.net"
     database = "privatelink.database.windows.net"
   }
-  dns_zone_name                = reverse(split(var.dns_zone_id, "/"))[0]
-  dns_zone_resource_group_name = split(var.dns_zone_id, "/")[4]
+  dns_zone_name                = reverse(split("/", var.dns_zone_id))[0]
+  dns_zone_resource_group_name = split("/", var.dns_zone_id)[4]
 }
 
 resource "azurerm_private_dns_zone" "main" {
@@ -49,25 +49,29 @@ resource "azurerm_dns_txt_record" "main" {
   }
 }
 
-resource "azurerm_app_service_custom_hostname_binding" "example" {
-  hostname            = trim(azurerm_dns_cname_record.example.fqdn, ".")
-  app_service_name    = azurerm_app_service.example.name
-  resource_group_name = azurerm_resource_group.example.name
-  depends_on          = [azurerm_dns_txt_record.example]
+resource "azurerm_app_service_custom_hostname_binding" "main" {
+  hostname            = trim(azurerm_dns_cname_record.main.fqdn, ".")
+  app_service_name    = azurerm_windows_web_app.main.name
+  resource_group_name = azurerm_resource_group.main.name
 
-  # Ignore ssl_state and thumbprint as they are managed using
-  # azurerm_app_service_certificate_binding.example
+  depends_on = [
+    azurerm_dns_txt_record.main
+  ]
+
   lifecycle {
-    ignore_changes = [ssl_state, thumbprint]
+    ignore_changes = [
+      ssl_state,
+      thumbprint
+    ]
   }
 }
 
-resource "azurerm_app_service_managed_certificate" "example" {
-  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.example.id
+resource "azurerm_app_service_managed_certificate" "main" {
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.main.id
 }
 
-resource "azurerm_app_service_certificate_binding" "example" {
-  hostname_binding_id = azurerm_app_service_custom_hostname_binding.example.id
-  certificate_id      = azurerm_app_service_managed_certificate.example.id
+resource "azurerm_app_service_certificate_binding" "main" {
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.main.id
+  certificate_id      = azurerm_app_service_managed_certificate.main.id
   ssl_state           = "SniEnabled"
 }

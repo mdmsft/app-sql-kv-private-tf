@@ -19,7 +19,6 @@ resource "azurerm_windows_web_app" "main" {
   service_plan_id                 = azurerm_service_plan.main.id
   https_only                      = true
   key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
-  zip_deploy_file                 = "./app/publish.zip"
   virtual_network_subnet_id       = azurerm_subnet.app.id
 
   identity {
@@ -35,7 +34,6 @@ resource "azurerm_windows_web_app" "main" {
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.application_insights_connection_string.versionless_id})"
-    "WEBSITE_RUN_FROM_PACKAGE"              = "1"
   }
 
   site_config {
@@ -69,6 +67,13 @@ resource "azurerm_windows_web_app" "main" {
   depends_on = [
     azurerm_role_assignment.key_vault_secrets_user
   ]
+}
+
+resource "azurerm_app_service_source_control" "main" {
+  app_id                 = azurerm_windows_web_app.main.id
+  branch                 = "main"
+  repo_url               = var.web_app_repo_url
+  use_manual_integration = true
 }
 
 resource "azurerm_log_analytics_workspace" "main" {
