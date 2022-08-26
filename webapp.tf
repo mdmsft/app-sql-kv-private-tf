@@ -42,6 +42,7 @@ resource "azurerm_windows_web_app" "main" {
       dotnet_version = "v6.0"
     }
 
+    minimum_tls_version    = "1.2"
     health_check_path      = "/healthz"
     http2_enabled          = true
     use_32_bit_worker      = false

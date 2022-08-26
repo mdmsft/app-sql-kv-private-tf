@@ -27,6 +27,15 @@ variable "subscription_id" {
   type = string
 }
 
+variable "client_id" {
+  type = string
+}
+
+variable "client_secret" {
+  type      = string
+  sensitive = true
+}
+
 variable "app_virtual_network_address_space" {
   type    = string
   default = "192.168.0.0/24"
@@ -51,10 +60,6 @@ variable "sql_server_administrator_login" {
   type     = string
   nullable = true
   default  = null
-}
-
-variable "dns_zone_id" {
-  type = string
 }
 
 variable "web_app_repo_url" {
